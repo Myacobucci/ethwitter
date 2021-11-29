@@ -1,26 +1,26 @@
 const main = async () => {
   const [owner, randomPerson] = await hre.ethers.getSigners();
-  const waveContractFactory = await hre.ethers.getContractFactory('WavePortal');
-  const waveContract = await waveContractFactory.deploy();
-  await waveContract.deployed();
+  const ethweetContractFactory = await hre.ethers.getContractFactory('EthwitterPortal');
+  const ethweetContract = await ethweetContractFactory.deploy();
+  await ethweetContract.deployed();
 
-  console.log('Contract deployed to:', waveContract.address);
+  console.log('Contract deployed to:', ethweetContract.address);
   console.log('Contract deployed by:', owner.address);
 
-  let waveCount;
-  waveCount = await waveContract.getTotalWaves();
+  let ethweetCount;
+  ethweetCount = await ethweetContract.getTotalEthweets();
 
-  let waveTxn = await waveContract.wave();
-  await waveTxn.wait();
+  let ethweetTxn = await ethweetContract.ethweet();
+  await ethweetTxn.wait();
 
-  waveCount = await waveContract.getTotalWaves();
+  ethweetCount = await ethweetContract.getTotalEthweets();
 
-  waveTxn = await waveContract.connect(randomPerson).wave();
-  await waveTxn.wait();
+  ethweetTxn = await ethweetContract.connect(randomPerson).ethweet();
+  await ethweetTxn.wait();
 
-  waveCount = await waveContract.getTotalWaves();
+  ethweetCount = await ethweetContract.getTotalEthweets();
 
-  waveAddresses = await waveContract.getWaveAddresses();
+  ethweetAddresses = await ethweetContract.getEthweetAddresses();
 };
 
 const runMain = async () => {
