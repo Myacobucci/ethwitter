@@ -24,9 +24,9 @@ const App = () => {
 
         const ethweetsCleaned = ethweets.map(ethweet => {
           return {
-            address: ethweets.sender,
-            timestamp: new Date(ethweets.timestamp * 1000),
-            message: ethweets.message,
+            address: ethweet.sender,
+            timestamp: new Date(ethweet.timestamp * 1000),
+            message: ethweet.message,
           };
         });
 
