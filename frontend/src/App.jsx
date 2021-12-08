@@ -9,7 +9,7 @@ const App = () => {
   const [allEthweets, setAllEthweets] = useState([]);
   const [ethweetText, setEthweetText] = useState("");
 
-  const contractAddress = "0xb0880aa8d562f9d703F8D0c2F4cb840D4ce7716D";
+  const contractAddress = "0x1c859c9e6Da7daf3FF1d7B7d55cAe881f305c4eB";
   const contractABI = abi.abi;
 
   const getAllEthweets = async () => {
@@ -21,14 +21,13 @@ const App = () => {
         const ethweetPortalContract = new ethers.Contract(contractAddress, contractABI, signer);
 
         const ethweets = await ethweetPortalContract.getAllEthweets();
-        
-        let ethweetsCleaned = [];
-        ethweets.forEach(ethweet => {
-          ethweetsCleaned.push({
-            address: ethweet.sender,
-            timestamp: new Date(ethweet.timestamp * 1000),
-            message: ethweet.message
-          });
+
+        const ethweetsCleaned = ethweets.map(ethweet => {
+          return {
+            address: ethweets.sender,
+            timestamp: new Date(ethweets.timestamp * 1000),
+            message: ethweets.message,
+          };
         });
 
         setAllEthweets(ethweetsCleaned);
@@ -118,11 +117,12 @@ const App = () => {
         let count = await ethweetPortalContract.getTotalEthweets();
         console.log("Retrieved total ethweet count...", count.toNumber());
 
-        const ethweetTxn = await ethweetPortalContract.ethweet(ethweetText);
+        const ethweetTxn = await ethweetPortalContract.ethweet(ethweetText, { gasLimit: 300000 });
         console.log("Mining...", ethweetTxn.hash);
 
         await ethweetTxn.wait();
         console.log("Mined -- ", ethweetTxn.hash);
+        setEthweetText("");
 
         count = await ethweetPortalContract.getTotalEthweets();
         console.log("Retrieved total ethweet count...", count.toNumber());
@@ -148,6 +148,36 @@ const App = () => {
   useEffect(() => {
     getAllEthweets();
   }, []);
+  useEffect(() => {
+    let ethweetPortalContract;
+
+    const onNewEthweet = (from, timestamp, message) => {
+      console.log('NewEthweet', from, timestamp, message);
+      setAllEthweets(prevState => [
+        ...prevState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ]);
+    };
+
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      ethweetPortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+      ethweetPortalContract.on('NewEthweet', onNewEthweet);
+    }
+
+    return () => {
+      if (ethweetPortalContract) {
+        ethweetPortalContract.off('NewEthweet', onNewEthweet);
+      }
+    };
+  }, []);
+
   
   return (
     <div className="mainContainer">
