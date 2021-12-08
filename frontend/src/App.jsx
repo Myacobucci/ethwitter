@@ -9,7 +9,7 @@ const App = () => {
   const [allEthweets, setAllEthweets] = useState([]);
   const [ethweetText, setEthweetText] = useState("");
 
-  const contractAddress = "0x4258B1d31Ce7fe58f92f5F4362C65C2B9777F9f0";
+  const contractAddress = "0xb0880aa8d562f9d703F8D0c2F4cb840D4ce7716D";
   const contractABI = abi.abi;
 
   const getAllEthweets = async () => {
@@ -25,7 +25,7 @@ const App = () => {
         let ethweetsCleaned = [];
         ethweets.forEach(ethweet => {
           ethweetsCleaned.push({
-            address: ethweet.waver,
+            address: ethweet.sender,
             timestamp: new Date(ethweet.timestamp * 1000),
             message: ethweet.message
           });
