@@ -10,15 +10,18 @@ const main = async () => {
   let ethweetCount;
   ethweetCount = await ethweetContract.getTotalEthweets();
 
-  let ethweetTxn = await ethweetContract.ethweet();
+  let ethweetTxn = await ethweetContract.ethweet('A ethweet!');
   await ethweetTxn.wait();
 
   ethweetCount = await ethweetContract.getTotalEthweets();
 
-  ethweetTxn = await ethweetContract.connect(randomPerson).ethweet();
+  ethweetTxn = await ethweetContract.connect(randomPerson).ethweet("Another ethweet!");
   await ethweetTxn.wait();
 
   ethweetCount = await ethweetContract.getTotalEthweets();
+
+  let allEthweets = await ethweetContract.getAllEthweets();
+  console.log(allEthweets);
 
   ethweetAddresses = await ethweetContract.getEthweetAddresses();
 };
