@@ -8,7 +8,7 @@ contract EthwitterPortal {
     uint256 totalEthweets;
     address[] public ethweetAddresses;
     struct Ethweet {
-        address waver;
+        address sender;
         string message;
         uint256 timestamp;
     }
@@ -16,7 +16,7 @@ contract EthwitterPortal {
 
     event NewEthweet(address indexed from, uint256 timestamp, string message);
 
-    constructor() {
+    constructor() payable {
         console.log("Hey there, by contract I am smart");
     }
 
@@ -32,6 +32,14 @@ contract EthwitterPortal {
         ethweets.push(Ethweet(msg.sender, _message, block.timestamp));
 
         emit NewEthweet(msg.sender, block.timestamp, _message);
+
+        uint256 prizeAmount = 0.0001 ether;
+        require(
+            prizeAmount <= address(this).balance,
+            "Trying to withdraw more money than the contract has."
+        );
+        (bool success, ) = (msg.sender).call{value: prizeAmount}("");
+        require(success, "Failed to withdraw money from contract.");
     }
 
     function getAllEthweets() public view returns (Ethweet[] memory) {
