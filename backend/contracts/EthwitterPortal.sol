@@ -16,6 +16,8 @@ contract EthwitterPortal {
     }
     Ethweet[] ethweets;
 
+    mapping(address => uint256) public lastWavedAt;
+
     event NewEthweet(address indexed from, uint256 timestamp, string message);
 
     constructor() payable {
@@ -24,6 +26,12 @@ contract EthwitterPortal {
     }
 
     function ethweet(string memory _message) public {
+        require(
+            lastWavedAt[msg.sender] + 30 seconds < block.timestamp,
+            "Wait 30 seconds"
+        );
+        lastWavedAt[msg.sender] = block.timestamp;
+
         totalEthweets += 1;
         ethweetAddresses.push(msg.sender);
         console.log(
