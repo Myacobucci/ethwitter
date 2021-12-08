@@ -6,6 +6,8 @@ import "hardhat/console.sol";
 
 contract EthwitterPortal {
     uint256 totalEthweets;
+    uint256 private seed;
+
     address[] public ethweetAddresses;
     struct Ethweet {
         address sender;
@@ -18,6 +20,7 @@ contract EthwitterPortal {
 
     constructor() payable {
         console.log("Hey there, by contract I am smart");
+        seed = (block.timestamp + block.difficulty) % 100;
     }
 
     function ethweet(string memory _message) public {
@@ -33,13 +36,20 @@ contract EthwitterPortal {
 
         emit NewEthweet(msg.sender, block.timestamp, _message);
 
-        uint256 prizeAmount = 0.0001 ether;
-        require(
-            prizeAmount <= address(this).balance,
-            "Trying to withdraw more money than the contract has."
-        );
-        (bool success, ) = (msg.sender).call{value: prizeAmount}("");
-        require(success, "Failed to withdraw money from contract.");
+        seed = (block.difficulty + block.timestamp + seed) % 100;
+        console.log("Random # generated: %d", seed);
+
+        if (seed <= 5) {
+            console.log("%s won!", msg.sender);
+
+            uint256 prizeAmount = 0.00001 ether;
+            require(
+                prizeAmount <= address(this).balance,
+                "Trying to withdraw more money than the contract has."
+            );
+            (bool success, ) = (msg.sender).call{value: prizeAmount}("");
+            require(success, "Failed to withdraw money from contract.");
+        }
     }
 
     function getAllEthweets() public view returns (Ethweet[] memory) {
